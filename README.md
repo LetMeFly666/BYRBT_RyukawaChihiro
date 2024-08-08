@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-08 11:49:33
+ * @LastEditTime: 2024-08-08 22:47:34
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -70,6 +70,7 @@
     client_ip = 'http://127.0.0.1:8080'  # 被控制的客户端的web ip
     client_username = 'RyukawaChihiro'   # bt客户端web的用户名
     client_password = '666'              # bt客户端web的密码
+    savePath = ''                        # 【可选】默认保存路径
     ```
 
 ## 开发文档
@@ -82,6 +83,7 @@
 
 
 - [x] 头像：[https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg](https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg)、avatar_01.jpg、avatar_02.jpg、...
+- [ ] 磁盘空间考虑，这就需要优先级考虑
 
 ## End
 

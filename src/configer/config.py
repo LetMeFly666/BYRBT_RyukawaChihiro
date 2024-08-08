@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:31:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-08 16:46:52
+LastEditTime: 2024-08-08 17:26:40
 '''
 import sys
 append = sys.path.append
@@ -24,8 +24,14 @@ class Config:
             self.cookie = secret.cookie
             self.passkey = secret.passkey
             self.client_ip = secret.client_ip
+            if self.client_ip.endswith('/'):
+                self.client_ip = self.client_ip[:-1]
             self.client_username = secret.client_username
             self.client_password = secret.client_password
+            try:
+                self.savePath = secret.savePath
+            except:
+                self.savePath = None
         except Exception as e:
             print(e)
             print('\n')
@@ -84,6 +90,8 @@ class Config:
         print('3. 勾选“Web用户界面（远程控制）”，输入用户名和密码')
         print()
         self.client_ip = input('你设置的ip和端口【例如 http://127.0.0.1:8080】：')
+        if self.client_ip.endswith('/'):
+            self.client_ip = self.client_ip[:-1]
         self.client_username = input('你设置的用户名是：')
         self.client_password = password('你设置的密码是：')
         

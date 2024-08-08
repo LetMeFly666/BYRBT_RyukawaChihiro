@@ -2,64 +2,70 @@
 Author: LetMeFly
 Date: 2024-08-08 15:34:16
 LastEditors: LetMeFly
-LastEditTime: 2024-08-08 16:44:40
+LastEditTime: 2024-08-08 17:01:45
 '''
 from os import name as osName
+if osName == 'nt':
+    import msvcrt
+else:
+    import termios
+    import tty
+
 import sys
+stdout = sys.stdout
+stdin = sys.stdin
+del sys
+
 
 if osName == 'nt':  # Windows
-    import msvcrt
     def password(prompt='Password: ', mask='*'):
         password = ''
-        sys.stdout.write(prompt)
-        sys.stdout.flush()
+        stdout.write(prompt)
+        stdout.flush()
         while True:
             ch = msvcrt.getch()
             if ch in {b'\r', b'\n'}:  # Enter key
-                sys.stdout.write('\n')
+                stdout.write('\n')
                 return password
             elif ch == b'\x08':  # Backspace key
                 if len(password) > 0:
-                    sys.stdout.write('\b \b')
-                    sys.stdout.flush()
+                    stdout.write('\b \b')
+                    stdout.flush()
                     password = password[:-1]
             elif ch == b'\x03':  # Ctrl+C
                 raise KeyboardInterrupt
             else:
                 password += ch.decode('utf-8')
-                sys.stdout.write(mask)
-                sys.stdout.flush()
+                stdout.write(mask)
+                stdout.flush()
 
 else:  # Linux and other Unix-like systems
-    import termios
-    import tty
-
     def password(prompt='Password: ', mask='*'):
-        fd = sys.stdin.fileno()
+        fd = stdin.fileno()
         old = termios.tcgetattr(fd)
         new = termios.tcgetattr(fd)
         new[3] = new[3] & ~termios.ECHO
 
         try:
             tty.setraw(fd)
-            sys.stdout.write(prompt)
-            sys.stdout.flush()
+            stdout.write(prompt)
+            stdout.flush()
             password = ''
             while True:
-                ch = sys.stdin.read(1)
+                ch = stdin.read(1)
                 if ch == '\n' or ch == '\r':
-                    sys.stdout.write('\r\n')  # 光标移动到行首
-                    sys.stdout.flush()
+                    stdout.write('\r\n')  # 光标移动到行首
+                    stdout.flush()
                     break
                 elif ch == '\x7f':  # Handle backspace
                     if len(password) > 0:
-                        sys.stdout.write('\b \b')
-                        sys.stdout.flush()
+                        stdout.write('\b \b')
+                        stdout.flush()
                         password = password[:-1]
                 else:
                     password += ch
-                    sys.stdout.write(mask)
-                    sys.stdout.flush()
+                    stdout.write(mask)
+                    stdout.flush()
             return password
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old)
