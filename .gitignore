@@ -1,2 +1,7 @@
+# 具体文件
 config/secret.py
 src/getter/result.html
+
+
+# 通用文件
+__pycache__/
