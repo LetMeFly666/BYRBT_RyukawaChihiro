@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-07 17:21:46
+ * @LastEditTime: 2024-08-08 10:19:49
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -15,35 +15,53 @@
 
 <details><summary>BYRPT是什么？</summary>
 
-大概就是一个*只有教育网/外网的ipv6可以访问*的种子网站，里面有很多ZiYuan。
+大概就是一个<i>只有教育网/外网的ipv6可以访问</i>的种子网站，里面有很多ZiYuan。
 
 </details>
 
 <details><summary>为什么要刷流？</summary>
 
-1. 有上传量才能愉快地下载；
-2. 上传量达4T可永久保留账号；
-3. 看着上传量蹭蹭往上涨，それでいい。
+<ol>
+<li>有上传量才能愉快地下载；</li>
+<li>上传量达4T可永久保留账号；</li>
+<li>看着上传量蹭蹭往上涨，それでいい。</li>
+</ol>
 
 </details>
 
 <details><summary>为何重造轮子？</summary>
 
-最初是想起来的时候手动刷新一下看看有没有新的top且free的种子，后面写了个小爬虫121秒帮我看一次新种子，后面懒得手动增删种子了决定交给*流川千寻*来完成。
+<p>最初是想起来的时候手动刷新一下看看有没有新的top且free的种子，后面写了个小爬虫每121秒帮我看一次新种子，后面懒得手动增删种子了决定交给<i>流川千寻</i>来完成。</p>
 
-所以*流川千寻*是一只简单纯粹的佛系刷流姬。
+所以<i>流川千寻</i>是一只简单纯粹的佛系刷流姬。
 
 </details>
 
 <details><summary>为什么起这个名字？</summary>
 
-因为~~我想(bushi~~
+因为<del>我想(bushi</del>
 
 </details>
 
 ## 如何使用
 
-安装好Python，
+1. 安装好Python：[python.org](https://www.python.org/downloads/)直接下载无脑安装即可
+2. 登录BYRPT，获取你的cookie：
+
+    ![获取cookie](docs/img/howToFindCookie.jpg)
+
+3. 登录BYRPT，获取你的passkey：
+    
+    访问[`https://byr.pt/usercp.php`](https://byr.pt/usercp.php)，找到`passkey`并将后面的一串值复制
+
+    ![获取passkey](docs/img/getPasskey.jpg)
+
+4. 在`config`目录下新建文件`secret.py`，输入以下内容：
+    
+    ```python
+    cookie = 'eyJ0eXA...第2步获取到的值'
+    passkey = '第3步获取到的值'
+    ```
 
 ## 开发文档
 
@@ -59,4 +77,5 @@
 ## End
 
 + 仓库地址：[Github@LetMeFly666/BYRBT_RyukawaChihiro](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro)
-+ 在线浏览：[RyukawaChihiro.LetMeFly.XYZ]()
++ 在线浏览：[RyukawaChihiro.LetMeFly.XYZ](https://ryukawachihiro.letmefly.xyz/)
++ [我的流量条](https://byr.pt/mybar.php?userid=371930&bgpic=3)
