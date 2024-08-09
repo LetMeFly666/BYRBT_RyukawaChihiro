@@ -2,13 +2,13 @@
 Author: LetMeFly
 Date: 2024-08-07 12:12:02
 LastEditors: LetMeFly
-LastEditTime: 2024-08-09 18:00:42
+LastEditTime: 2024-08-09 23:52:39
 '''
 from src.configer import CONFIG
 from src.client import QBittorrent
+from src.getter import getHashById
 
-
-qBittorrent = QBittorrent()
+# qBittorrent = QBittorrent()
 
 """客户端 - 依据hash获取种子"""
 # torrentList = qBittorrent.getTorrentList_byHash('b8847ce3975bb0a28e58851b13dc7b6bf1d74f31|8a61a54b524b076cf6ea58ee96aa13fc1373d1ed|6a617e0a58bbab70ea50417ec49984535f02ce41')  # 存在|存在|已删除
@@ -31,3 +31,8 @@ qBittorrent = QBittorrent()
 # # # 暂停做种
 # # qBittorrent.pauseTorrents('e305bd401fedb196ae7cac54b5d9f5f7767eccdc')
 # qBittorrent.deleteTorrents('688ccbbadcef9569b7fa2dbe4ea6e1a1d2d0f92b')
+
+
+"""byr - 根据种子id获取hash：此处需有cache"""
+print(getHashById('345434'))
+print(getHashById('345434'))
