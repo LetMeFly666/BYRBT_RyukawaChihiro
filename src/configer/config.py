@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:31:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-08 17:26:40
+LastEditTime: 2024-08-09 12:43:49
 '''
 import sys
 append = sys.path.append
@@ -28,10 +28,15 @@ class Config:
                 self.client_ip = self.client_ip[:-1]
             self.client_username = secret.client_username
             self.client_password = secret.client_password
+            self.maxDiskUsage = secret.maxDiskUsage
             try:
                 self.savePath = secret.savePath
             except:
                 self.savePath = None
+            try:
+                self.refreshTime = secret.refreshTime
+            except:
+                self.refreshTime = 121
         except Exception as e:
             print(e)
             print('\n')
@@ -45,6 +50,10 @@ class Config:
             self._getCookie()
             self._getPasskey()
             self._getClient()
+            self._getMaxDiskUsage()
+
+            self.savePath = None
+            self.refreshTime = 121
             
             self._saveConfig()
     
@@ -59,6 +68,9 @@ class Config:
         toWrite += f'client_ip = "{self.client_ip}"\n'
         toWrite += f'client_username = "{self.client_username}"\n'
         toWrite += f'client_password = "{self.client_password}"\n'
+        toWrite += f'maxDiskUsage = "{self.maxDiskUsage}"\n'
+        toWrite += f'savePath = "{self.savePath}"\n'
+        toWrite += f'refreshTime = "{self.refreshTime}"\n'
         with open(join(configDir, 'secret.py'), 'w', encoding='utf-8') as f:
             f.write(toWrite)
 
@@ -94,7 +106,15 @@ class Config:
             self.client_ip = self.client_ip[:-1]
         self.client_username = input('你设置的用户名是：')
         self.client_password = password('你设置的密码是：')
-        
-        
+    
+    def _getMaxDiskUsage(self):
+        print('\n\n')
+        while True:
+            try:
+                self.maxDiskUsage = float(input('你设置的最大磁盘使用量是(单位GB): '))
+                break
+            except:
+                print('请输入数字，例如525.25')
+
 
 CONFIG = Config()

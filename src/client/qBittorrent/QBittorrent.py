@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:27:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-08 23:18:39
+LastEditTime: 2024-08-09 12:09:22
 '''
 from src.configer import CONFIG
 import requests
@@ -17,8 +17,13 @@ class QBittorrent:
         ip = CONFIG.client_ip
         username = CONFIG.client_username
         password = CONFIG.client_password
-        response = requests.get(f'{ip}/api/v2/auth/login?username={username}&password={password}')
+        response = requests.post(f'{ip}/api/v2/auth/login', data={'username': username, 'password': password})  # 此时还无self.sid，无法使用self._request_post()
+        print(response)
+        print(response.text)
+
         self.sid = response.cookies.get('SID')
+        # if not self.sid:
+        #     raise Exception('Login failed')
     
     def _request_get(self, url: str, data: dict) -> requests.Response:
         return requests.get(url, params=data, cookies={'SID': self.sid})
@@ -53,12 +58,12 @@ class QBittorrent:
     """添加新种子"""
     def addNewTorrent(self, torrentId: str) -> None:
         torrentURL = f'https://tjupt.org/download.php?id={torrentId}&passkey={CONFIG.passkey}'
-        print(torrentURL)
+        # print(torrentURL)
         if CONFIG.savePath:
             savePath = CONFIG.savePath
         else:
             savePath = self.getDefaultSavePath()
-        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/add', {'urls': torrentURL, 'savepath': savePath})
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/add', {'urls': torrentURL, 'savepath': savePath, 'tags': 'tju-小种子'})
         print(response)
         print(response.text)
     
