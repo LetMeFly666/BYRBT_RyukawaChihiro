@@ -2,10 +2,11 @@
 Author: LetMeFly
 Date: 2024-08-08 10:27:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-09 12:09:22
+LastEditTime: 2024-08-09 17:55:46
 '''
 from src.configer import CONFIG
 import requests
+import time
 
 
 class QBittorrent:
@@ -50,25 +51,56 @@ class QBittorrent:
         return log
     
     """获取qBittorrent种子列表"""
-    def getTorrentList(self) -> list:
-        response = self._request_get(f'{CONFIG.client_ip}/api/v2/torrents/info', {'limit': '1'})
+    def getTorrentList(self, filter: dict) -> list:
+        response = self._request_get(f'{CONFIG.client_ip}/api/v2/torrents/info', filter)
         torrentList = response.json()
         return torrentList
     
+    """获取qBittorrent种子列表 | hash为hashes"""
+    def getTorrentList_byHash(self, hashes: str) -> list:
+        # 其中多个hash可用`|`分隔
+        return self.getTorrentList({'hashes': hashes})
+
+    """获取qBittorrent种子列表 | tag为tag"""
+    def getTorrentList_byTag(self, tag: str) -> list:
+        return self.getTorrentList({'tag': tag})
+    
     """添加新种子"""
     def addNewTorrent(self, torrentId: str) -> None:
-        torrentURL = f'https://tjupt.org/download.php?id={torrentId}&passkey={CONFIG.passkey}'
+        torrentURL = f'https://byr.pt/download.php?id={torrentId}&passkey={CONFIG.passkey}'
         # print(torrentURL)
         if CONFIG.savePath:
             savePath = CONFIG.savePath
         else:
             savePath = self.getDefaultSavePath()
-        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/add', {'urls': torrentURL, 'savepath': savePath, 'tags': 'tju-小种子'})
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/add', {'urls': torrentURL, 'savepath': savePath, 'tags': 'sc'})
         print(response)
         print(response.text)
     
-    def addTorrentTags(self, torrentHash: str, tags: str) -> None:
-        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/addTags', {'hashes': torrentHash, 'tags': tags})
+    """种子打标签"""
+    def addTorrentTags(self, hashes: str, tags: str) -> None:
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/addTags', {'hashes': hashes, 'tags': tags})
+        print(response)
+        print(response.text)
+    
+    """强制重新汇报"""
+    def forceReannounce(self, hashes: str) -> None:
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/reannounce', {'hashes': hashes})
         print(response)
         print(response.text)
 
+    """暂停种子"""
+    def pauseTorrents(self, hashes: str) -> None:
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/pause', {'hashes': hashes})
+        print(response)
+        print(response.text)
+
+    """删除种子"""
+    def deleteTorrents(self, hashes: str) -> None:
+        self.forceReannounce(hashes)
+        time.sleep(5)
+        self.pauseTorrents(hashes)
+        time.sleep(5)
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/delete', {'hashes': hashes, 'deleteFiles': True})
+        print(response)
+        print(response.text)
