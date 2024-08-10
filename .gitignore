@@ -1,5 +1,6 @@
 # 具体文件
 config/secret.py
+config/cacher*.json
 src/getter/result.html
 
 

@@ -2,11 +2,11 @@
 Author: LetMeFly
 Date: 2024-08-07 12:12:02
 LastEditors: LetMeFly
-LastEditTime: 2024-08-09 23:52:39
+LastEditTime: 2024-08-10 11:46:11
 '''
 from src.configer import CONFIG
 from src.client import QBittorrent
-from src.getter import getHashById
+from src.getter import BYR
 
 # qBittorrent = QBittorrent()
 
@@ -34,5 +34,15 @@ from src.getter import getHashById
 
 
 """byr - 根据种子id获取hash：此处需有cache"""
-print(getHashById('345434'))
-print(getHashById('345434'))
+# print(BYR.getHashById('345434'))
+# print(BYR.getHashById('345434'))
+
+"""byr - 获取TopFree种子的信息：种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash"""
+# # test _getTorrentInfoByHTML
+# from bs4 import BeautifulSoup
+# html = open('temp.html', 'r', encoding='utf-8').read()
+# soup = BeautifulSoup(html, 'lxml')
+# torrentInfo = BYR._getTorrentInfoBySoup(soup)
+# print(torrentInfo)
+topFree = BYR.getTopFree()
+print(topFree)

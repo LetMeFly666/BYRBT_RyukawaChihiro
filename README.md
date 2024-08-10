@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-09 18:01:03
+ * @LastEditTime: 2024-08-10 12:00:22
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -153,19 +153,16 @@ def reallyDownload(seed):
 
 - [x] 头像：[https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg](https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg)、avatar_01.jpg、avatar_02.jpg、...
 - [x] 磁盘空间考虑
-- [ ] 种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
+- [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
 
 - [x] 客户端 - 依据hash获取种子
 - [x] 客户端 - 依据标签获取种子
 - [x] 客户端 - 依据hash打标签
 - [x] 客户端 - 依据种子id下载一个byr种子
 - [x] 客户端 - 删除一个本地种子：汇报、暂停、删除 每次操作间隔5秒，防止文件被占用删除失败
-- [ ] byr - 根据种子id获取hash：此处需有cache
-- [ ] byr - 获取TopFree种子的信息：种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash
-   free_tags1 = soup.find_all('div', class_='icons sticky-three inverse-y')
-   free_tags2 = soup.find_all('div', class_='icons sticky-buy inverse-y')
-   free_tags3 = soup.find_all('div', class_='icons sticky-one inverse-y')
-   free_tags4 = soup.find_all('div', class_='icons sticky-two inverse-y')
+- [x] byr - 根据种子id获取hash：此处需有cache
+- [x] byr - 获取TopFree种子的信息：种子名、种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash（假设TopFree的种子不会超过一页）
+- [ ] controller
 
 ## End
 
