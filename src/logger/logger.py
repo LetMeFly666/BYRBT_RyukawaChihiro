@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 18:39:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 18:55:34
+LastEditTime: 2024-08-10 19:24:19
 '''
 import sys
 stdout = sys.stdout
@@ -36,16 +36,24 @@ class Logger:
         if not exists(self.logFilePath):
             with open(self.logFilePath, 'w', encoding='utf-8') as file:
                 pass
-        self.lastLog = None
+        self.historyLogs = self._loadHistoryLogs()
 
-    def log(self, message: str) -> None:
-        if message == self.lastLog:
+    def _loadHistoryLogs(self):
+        logs = set()
+        if exists(self.logFilePath):
+            with open(self.logFilePath, 'r', encoding='utf-8') as file:
+                for line in file:
+                    logs.add(line.strip())
+        return logs
+
+    def log(self, message: str, notShowAgain: bool = True) -> None:
+        if notShowAgain and message in self.historyLogs:
             return
         clearBeforePrint(message)
         print()  # 回车后上一行信息不会被覆盖
         with open(self.logFilePath, 'a', encoding='utf-8') as file:
             file.write(message + '\n')
-        self.lastLog = message
+        self.historyLogs.add(message)
 
 
 if __name__ == '__main__':

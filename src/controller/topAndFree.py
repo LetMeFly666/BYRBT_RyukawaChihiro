@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 19:14:30
+LastEditTime: 2024-08-10 19:25:06
 '''
 from src.configer import CONFIG
 from src.getter import BYR
@@ -59,10 +59,10 @@ class TopAndFree:
             while CONFIG.maxDiskUsage - nowDiskUsage < seed['size']:
                 thisToDelSeed = toDelSeeds.pop(0)
                 nowDiskUsage -= thisToDelSeed['size']
-                logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})')
+                logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})', notShowAgain=False)
                 qBittorrent.deleteTorrents(thisToDelSeed['hash'])
             logger.log(f'下载种子：{seed["name"]} ({convertBytes2humanReadable(seed["size"])}) | 做种者：{seed["seeders"]} | 下载者：{seed["leechers"]}')
-            qBittorrent.addNewTorrent(seed['id'])
+            qBittorrent.addNewTorrent(seed['id'], notShowAgain=False)
             nowDiskUsage += seed['size']
 
     """获取当前sc种子占据的磁盘空间"""
