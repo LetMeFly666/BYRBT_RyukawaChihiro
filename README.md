@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-10 18:29:44
+ * @LastEditTime: 2024-08-10 18:38:14
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -86,8 +86,8 @@
 
 |参数|类型|描述|举例|
 |:--:|:--:|:--:|:--:|
-|`cookie`|string|byrpt网页端的cookie，可参考[如何使用](#如何使用)第2步获取|`'eyJ0eXA45454jkjsiu2o30u2ohskjfklsjfklj...'`|
-|`passkey`|string|byrpt账号passkey，可参考[如何使用](#如何使用)第3步获取|`'ljkjeijoi0999887398798u2uj3ijl'`|
+|`cookie`|string|byrpt网页端的cookie，可参考[如何使用](#如何使用)第2步获取|`'eyJ0eXA45454jkjsiu...'`|
+|`passkey`|string|byrpt账号passkey，可参考[如何使用](#如何使用)第3步获取|`'ljkjeijoi099988739879'`|
 |`client_ip`|string|qBittorrent客户端web ui的地址，可参考[如何使用](#如何使用)第4步进行配置|`'http://127.0.0.1:8080'`|
 |`client_username`|string|qBittorrent客户端web ui的用户名，可参考[如何使用](#如何使用)第4步进行配置|`'RyukawaChihiro'`|
 |`client_password`|string|qBittorrent客户端web ui的密码，可参考[如何使用](#如何使用)第4步进行配置|`'666'`|
@@ -156,7 +156,9 @@ def reallyDownload(seed):
 
 - [x] 头像：[https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg](https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg)、avatar_01.jpg、avatar_02.jpg、...
 - [x] 磁盘空间考虑
+- [x] controller
 - [ ] Logger
+- [ ] 账号密码登录byr，在cookie失效时自动刷新cookie
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
 
 ### 具体细节
@@ -168,7 +170,6 @@ def reallyDownload(seed):
 - [x] 客户端 - 删除一个本地种子：汇报、暂停、删除 每次操作间隔5秒，防止文件被占用删除失败
 - [x] byr - 根据种子id获取hash：此处需有cache
 - [x] byr - 获取TopFree种子的信息：种子名、种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash（假设TopFree的种子不会超过一页）
-- [x] controller
 
 ## End
 

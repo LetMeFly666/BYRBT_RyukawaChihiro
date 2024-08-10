@@ -2,18 +2,19 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 18:28:52
+LastEditTime: 2024-08-10 19:14:30
 '''
 from src.configer import CONFIG
 from src.getter import BYR
 from src.client import QBittorrent
 from src.utils import convertBytes2humanReadable, convertTimestamp2humanReadable
+from src.logger import logger, clearBeforePrint
 import time
 
 class TopAndFree:
     def __init__(self) -> None:
         pass
-
+    
     """将哈希列表拼接成hash字符串"""
     def _connectHashStr_byHashList(self, hashList: list) -> str:
         ans = ''
@@ -47,21 +48,22 @@ class TopAndFree:
         return ans
     
     """尝试下载"""
-    def _download(self, nowDiskUsage: int, toDownloadSeeds: dict, toDelSeeds: list) -> None:
+    def _download(self, nowDiskUsage: int, toDownloadSeeds: dict, toDelSeeds: list, qBittorrent: QBittorrent) -> None:
         toDownloadSeeds = self._sortToDownloadSeeds(toDownloadSeeds)
         toDelSeeds = self._sortToDelSeeds(toDelSeeds)
         for seed in toDownloadSeeds:
             maxFree = sum(thisSeed['size'] for thisSeed in toDelSeeds)
             if CONFIG.maxDiskUsage - nowDiskUsage + maxFree < seed['size']:
-                print(f'最大空间使用{convertBytes2humanReadable(CONFIG.maxDiskUsage)}，当前空间使用{convertBytes2humanReadable(nowDiskUsage)}，最多释放空间{convertBytes2humanReadable(maxFree)}，小于所需空间{convertBytes2humanReadable(seed["size"])}，无法下载种子{seed["name"]}')
+                logger.log(f'最大空间使用{convertBytes2humanReadable(CONFIG.maxDiskUsage)}，当前空间使用{convertBytes2humanReadable(nowDiskUsage)}，最多释放空间{convertBytes2humanReadable(maxFree)}，小于所需空间{convertBytes2humanReadable(seed["size"])}，无法下载种子{seed["name"]}')
                 continue
             while CONFIG.maxDiskUsage - nowDiskUsage < seed['size']:
                 thisToDelSeed = toDelSeeds.pop(0)
                 nowDiskUsage -= thisToDelSeed['size']
-                print(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})')
-                # QBittorrent.deleteTorrents([thisToDelSeed['hash']])
-            print('下载种子：', seed['name'])
-            # QBittorrent.addNewTorrent(seed['id'])
+                logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})')
+                qBittorrent.deleteTorrents(thisToDelSeed['hash'])
+            logger.log(f'下载种子：{seed["name"]} ({convertBytes2humanReadable(seed["size"])}) | 做种者：{seed["seeders"]} | 下载者：{seed["leechers"]}')
+            qBittorrent.addNewTorrent(seed['id'])
+            nowDiskUsage += seed['size']
 
     """获取当前sc种子占据的磁盘空间"""
     def _getNowDiskUsage(self, scTorrents: list) -> int:
@@ -93,12 +95,12 @@ class TopAndFree:
         self._addToDelTag(scSeeds, topfreeHashes, qBittorrent)
         toDelSeeds = qBittorrent.getTorrentList_byTag('toDel')
         toDownloadSeeds = self._getToDownloadSeeds(topFree, scseedsHahses)
+        if not toDownloadSeeds:
+            clearBeforePrint('没有需要下载的种子')
+            return
         nowDiskUsage = self._getNowDiskUsage(scSeeds)
-        self._download(nowDiskUsage, toDownloadSeeds, toDelSeeds)
-        
-        
-
-
+        self._download(nowDiskUsage, toDownloadSeeds, toDelSeeds, qBittorrent)
+    
     def run(self) -> None:
         # self._runOnce()
         while True:
@@ -107,4 +109,9 @@ class TopAndFree:
             except Exception as e:
                 print(e)
             finally:
-                time.sleep(CONFIG.refreshTime)
+                nowSleep = 0
+                while nowSleep < CONFIG.refreshTime:
+                    thisSleep = min(CONFIG.refreshTime - nowSleep, 1)
+                    clearBeforePrint(f'sleep {nowSleep}/{CONFIG.refreshTime} s')
+                    time.sleep(thisSleep)
+                    nowSleep += thisSleep
