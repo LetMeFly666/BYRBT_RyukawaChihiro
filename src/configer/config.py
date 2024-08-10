@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:31:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-09 12:43:49
+LastEditTime: 2024-08-10 18:18:31
 '''
 import sys
 append = sys.path.append
@@ -28,7 +28,7 @@ class Config:
                 self.client_ip = self.client_ip[:-1]
             self.client_username = secret.client_username
             self.client_password = secret.client_password
-            self.maxDiskUsage = secret.maxDiskUsage
+            self.maxDiskUsage = int(secret.maxDiskUsage * 1024 * 1024 * 1024)
             try:
                 self.savePath = secret.savePath
             except:
@@ -111,7 +111,7 @@ class Config:
         print('\n\n')
         while True:
             try:
-                self.maxDiskUsage = float(input('你设置的最大磁盘使用量是(单位GB): '))
+                self.maxDiskUsage = int(float(input('你设置的最大磁盘使用量是(单位GB): ')) * 1024 * 1024 * 1024)
                 break
             except:
                 print('请输入数字，例如525.25')

@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-09 23:26:37
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 11:54:45
+LastEditTime: 2024-08-10 17:40:42
 '''
 import requests
 from bs4 import BeautifulSoup
@@ -14,7 +14,7 @@ import re
 @untilSuccess(5)
 @Cacher('id2hash')
 def getHashById(id: str) -> str:    
-    print(f'get hash by id({id})')
+    # print(f'get hash by id({id})')
     response = requests.get(f'https://byr.pt/details.php?id={id}', cookies={'auth_token': CONFIG.cookie})
     pattern = re.compile(r'Hash码.*?\s*[:：]\s*<[^>]*>\s*(?:&nbsp;)*\s*([a-z0-9]+)')  # Hash码 数个空格 中文或英文冒号 HTML标签 数个空格 数个&nbsp; 数个空格 小写字母或数字字符串
     match = pattern.search(response.text)
@@ -45,7 +45,7 @@ def _findTopFreeBySoupList(torrents: list) -> list:
 
 
 def _convertSize2bytes(sizeStr: str) -> int:
-    print(sizeStr)
+    # print(sizeStr)
     match = re.match(r"([0-9.]+)([a-zA-Z]+)", sizeStr)
     size = float(match.group(1))
     unit = match.group(2)
@@ -105,7 +105,12 @@ def _getTorrentInfoBySoup(torrent: BeautifulSoup) -> dict:
     return info
 
 
-# @untilSuccess(CONFIG.refreshTime)
+"""
+获取topFree的种子，返回种子列表。
+列表每个元素是一个字典，代表一个种子。
+字典的键值为：name、id、freeUntil、size、seeders、leechers、hash
+"""
+@untilSuccess(CONFIG.refreshTime)
 def getTopFree() -> list:
     response = requests.get('https://byr.pt/torrents.php', cookies={'auth_token': CONFIG.cookie})
     html = response.text

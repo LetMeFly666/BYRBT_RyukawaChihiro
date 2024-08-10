@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-10 12:00:22
+ * @LastEditTime: 2024-08-10 18:29:44
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -102,7 +102,7 @@
 流川千寻会对种子打上如下标签：
 
 1. `sc`：所有的TopFree的（或流川千寻工作期间TopFree过的）种子都会被打上`sc`标签。这些种子将会被认为不是长期做种的种子，可能会随着过期策略被删除。
-2. `toDel`：在TopFree过的种子中，由于免费时长到期等原因，已经不是TopFree的种子。这些种子将优先被删除。
+2. `toDel`：在TopFree过的种子中，由于免费时长到期等原因，已经不是TopFree的种子。这些种子将优先被删除。如果你不想要某个种子了，你可以手动将其添加toDel标签，流川千寻会在合适的时间删除它。
 
 ### 种子判定
 
@@ -112,7 +112,9 @@
 
 依据TopFree种子的hash，筛选客户端中的种子。对客户端中所有已经存在的TopFree的种子打一次`sc`标签。
 
-之后筛选客户端中所有具有`sc`标签的种子。如果已经不在TopFree中，则将被打上`toDel`标签。对于所有具有`sc`标签的种子，统计总磁盘占用。
+筛选客户端中所有具有`sc`标签的种子。如果已经不在TopFree中，则将被打上`toDel`标签。对于所有具有`sc`标签的种子，统计总磁盘占用。
+
+筛选客户端中所有具有`toDel`标签的种子。
 
 若有TopFree的种子还未下载，则进入[种子下载](#种子下载)。
 
@@ -121,18 +123,18 @@
 对所有待下载的种子，执行下面操作：
 
 ```python
-当前磁盘总占用, 需下载种子, 具有sc标签的种子 = 种子判定()
+当前磁盘总占用, 需下载种子, 具有toDel标签的种子 = 种子判定()
 需下载种子.sortBy(有做种者的优先，无做种者的其次。对于有做种者：下载者数/做种者数越大越优先)
-具有sc标签的种子.sortBy(种子添加时间)  # 下载较早的种子优先
+具有toDel标签的种子.sortBy(种子添加时间)  # 下载较早的种子优先
 for seed in 需下载种子:
     tryToDownload(seed)
 
 def tryToDownload(seed):
-    if maxDiskUsage - 当前磁盘总占用 + sum(thisSeed.size for thisSeed in 具有sc标签的种子) < seed.size:
+    if maxDiskUsage - 当前磁盘总占用 + sum(thisSeed.size for thisSeed in 具有toDel标签的种子) < seed.size:
         return  # “最大占用 - 已经使用 + 可释放” 仍然小于待下载种子，放弃下载 | TODO: 此处可有更优策略
-    while maxDiskUsage - 当前磁盘总占用 < seed.size and len(具有sc标签的种子):
-        这次被删的种子 = 具有sc标签的种子[0]
-        具有sc标签的种子 = 具有sc标签的种子[1:]
+    # 其实这样可能会导致多删，后面也可加个“撤回操作”。比如种子1下载很早，但是只有2G，种子2下载较晚，有100G。可能只用删种子2就够了，但这样种子1也会被删
+    while maxDiskUsage - 当前磁盘总占用 < seed.size:
+        这次被删的种子 = 具有toDel标签的种子.pop(0)
         当前磁盘总占用 -= 这次被删的种子.size
         控制客户端删除种子(这次被删的种子)
     reallyDownload(seed)
@@ -150,10 +152,14 @@ def reallyDownload(seed):
 
 ## TODO
 
+### 总体需求
 
 - [x] 头像：[https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg](https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg)、avatar_01.jpg、avatar_02.jpg、...
 - [x] 磁盘空间考虑
+- [ ] Logger
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
+
+### 具体细节
 
 - [x] 客户端 - 依据hash获取种子
 - [x] 客户端 - 依据标签获取种子
@@ -162,7 +168,7 @@ def reallyDownload(seed):
 - [x] 客户端 - 删除一个本地种子：汇报、暂停、删除 每次操作间隔5秒，防止文件被占用删除失败
 - [x] byr - 根据种子id获取hash：此处需有cache
 - [x] byr - 获取TopFree种子的信息：种子名、种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash（假设TopFree的种子不会超过一页）
-- [ ] controller
+- [x] controller
 
 ## End
 

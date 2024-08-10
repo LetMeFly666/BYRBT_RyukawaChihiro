@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:27:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-09 17:55:46
+LastEditTime: 2024-08-10 17:40:03
 '''
 from src.configer import CONFIG
 import requests
@@ -19,8 +19,8 @@ class QBittorrent:
         username = CONFIG.client_username
         password = CONFIG.client_password
         response = requests.post(f'{ip}/api/v2/auth/login', data={'username': username, 'password': password})  # 此时还无self.sid，无法使用self._request_post()
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
 
         self.sid = response.cookies.get('SID')
         # if not self.sid:
@@ -74,26 +74,26 @@ class QBittorrent:
         else:
             savePath = self.getDefaultSavePath()
         response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/add', {'urls': torrentURL, 'savepath': savePath, 'tags': 'sc'})
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
     
     """种子打标签"""
     def addTorrentTags(self, hashes: str, tags: str) -> None:
         response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/addTags', {'hashes': hashes, 'tags': tags})
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
     
     """强制重新汇报"""
     def forceReannounce(self, hashes: str) -> None:
         response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/reannounce', {'hashes': hashes})
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
 
     """暂停种子"""
     def pauseTorrents(self, hashes: str) -> None:
         response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/pause', {'hashes': hashes})
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
 
     """删除种子"""
     def deleteTorrents(self, hashes: str) -> None:
@@ -102,5 +102,5 @@ class QBittorrent:
         self.pauseTorrents(hashes)
         time.sleep(5)
         response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/delete', {'hashes': hashes, 'deleteFiles': True})
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
