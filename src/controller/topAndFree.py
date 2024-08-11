@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 19:25:06
+LastEditTime: 2024-08-11 09:50:11
 '''
 from src.configer import CONFIG
 from src.getter import BYR
@@ -34,6 +34,7 @@ class TopAndFree:
         for seed in scSeeds:
             if seed['hash'] not in topFreeHashes:
                 notTopfreeHashList.append(seed['hash'])
+                logger.log(f'不再是TopFree：{seed["name"]}，该种子将被打上toDel标签，在合适的时间被删除')
         if not notTopfreeHashList:
             return
         notTopfreeHashes = self._connectHashStr_byHashList(notTopfreeHashList)
@@ -61,8 +62,8 @@ class TopAndFree:
                 nowDiskUsage -= thisToDelSeed['size']
                 logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})', notShowAgain=False)
                 qBittorrent.deleteTorrents(thisToDelSeed['hash'])
-            logger.log(f'下载种子：{seed["name"]} ({convertBytes2humanReadable(seed["size"])}) | 做种者：{seed["seeders"]} | 下载者：{seed["leechers"]}')
-            qBittorrent.addNewTorrent(seed['id'], notShowAgain=False)
+            logger.log(f'下载种子：{seed["name"]} ({convertBytes2humanReadable(seed["size"])}) | 做种者：{seed["seeders"]} | 下载者：{seed["leechers"]}', notShowAgain=False)
+            qBittorrent.addNewTorrent(seed['id'])
             nowDiskUsage += seed['size']
 
     """获取当前sc种子占据的磁盘空间"""
@@ -105,9 +106,10 @@ class TopAndFree:
         # self._runOnce()
         while True:
             try:
+                clearBeforePrint('新种判断')
                 self._runOnce()
             except Exception as e:
-                print(e)
+                logger.log(f'{e}', notShowAgain=False)
             finally:
                 nowSleep = 0
                 while nowSleep < CONFIG.refreshTime:

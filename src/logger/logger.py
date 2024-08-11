@@ -2,13 +2,14 @@
 Author: LetMeFly
 Date: 2024-08-10 18:39:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 19:24:19
+LastEditTime: 2024-08-11 09:24:17
 '''
 import sys
 stdout = sys.stdout
 del sys
 from os.path import join, exists, dirname
 from os import makedirs, getcwd
+from src.utils import getNow
 
 
 """首先将光标移动到这一行的行首，然后清空这一行，再输出字符串，不回车"""
@@ -46,10 +47,14 @@ class Logger:
                     logs.add(line.strip())
         return logs
 
-    def log(self, message: str, notShowAgain: bool = True) -> None:
+    def log(self, message: str, notShowAgain: bool = True, ifShowTime: bool = True) -> None:
         if notShowAgain and message in self.historyLogs:
             return
-        clearBeforePrint(message)
+        if ifShowTime:
+            toPrint = message + f' | {getNow()}'
+        else:
+            toPrint = message
+        clearBeforePrint(toPrint)
         print()  # 回车后上一行信息不会被覆盖
         with open(self.logFilePath, 'a', encoding='utf-8') as file:
             file.write(message + '\n')

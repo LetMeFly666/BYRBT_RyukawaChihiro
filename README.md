@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-10 18:38:14
+ * @LastEditTime: 2024-08-11 09:33:45
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -157,7 +157,8 @@ def reallyDownload(seed):
 - [x] 头像：[https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg](https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_00.jpg)、avatar_01.jpg、avatar_02.jpg、...
 - [x] 磁盘空间考虑
 - [x] controller
-- [ ] Logger
+- [x] Logger
+- [ ] 避免产生额外下载量的问题：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
 - [ ] 账号密码登录byr，在cookie失效时自动刷新cookie
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
 

@@ -2,19 +2,20 @@
 Author: LetMeFly
 Date: 2024-08-09 23:26:37
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 17:40:42
+LastEditTime: 2024-08-11 09:51:27
 '''
 import requests
 from bs4 import BeautifulSoup
 from src.configer import CONFIG
 from src.utils import untilSuccess, Cacher
 import re
+from src.logger import logger
 
 
 @untilSuccess(5)
 @Cacher('id2hash')
 def getHashById(id: str) -> str:    
-    # print(f'get hash by id({id})')
+    logger.log(f'get hash by id({id})')
     response = requests.get(f'https://byr.pt/details.php?id={id}', cookies={'auth_token': CONFIG.cookie})
     pattern = re.compile(r'Hash码.*?\s*[:：]\s*<[^>]*>\s*(?:&nbsp;)*\s*([a-z0-9]+)')  # Hash码 数个空格 中文或英文冒号 HTML标签 数个空格 数个&nbsp; 数个空格 小写字母或数字字符串
     match = pattern.search(response.text)
