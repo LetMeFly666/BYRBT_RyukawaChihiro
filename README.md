@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-12 10:01:26
+ * @LastEditTime: 2024-08-12 10:14:55
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -147,67 +147,6 @@ def reallyDownload(seed):
 
 ## 开发文档
 
-
-我有一段自动下载和删除种子的代码，帮我看看写地是否有问题。
-
-逻辑如下：
-
-```
-当前磁盘总占用, 需下载种子, 具有toDel标签的种子 = 种子判定()
-需下载种子.sortBy(有做种者的优先，无做种者的其次。对于有做种者：下载者数/做种者数越大越优先)
-具有toDel标签的种子.sortBy(种子添加时间)  # 下载较早的种子优先
-for seed in 需下载种子:
-    tryToDownload(seed)
-
-def tryToDownload(seed):
-    if maxDiskUsage - 当前磁盘总占用 + sum(thisSeed.size for thisSeed in 具有toDel标签的种子) < seed.size:
-        return  # “最大占用 - 已经使用 + 可释放” 仍然小于待下载种子，放弃下载 | TODO: 此处可有更优策略
-    # 假如按照下载时间从早到晚的顺序种子大小为[1G, 2G, 7G, xxx]，需要释放的空间为8G
-    # 则(1+2+7)=10≥8，之后从后往前回滚，10-7<8，10-2=8≥8（不删2），8-1<8，最终决定删除[1G, 7G]的种子
-    真正要被删除的种子 = 下载早的优先_直至释放足够空间_从后往前回滚_移除可以不被删的种子()
-    for 这次被删除的种子 in 真正要被删除的种子:
-        当前磁盘总占用 -= 这次被删的种子.size
-        控制客户端删除种子(这次被删的种子)
-    reallyDownload(seed)
-
-def reallyDownload(seed):
-    当前磁盘总占用 += seed.size
-    控制客户端下载种子_并_打上sc标签(seed)
-```
-
-代码如下：
-
-```
-"""尝试下载"""
-def _download(self, nowDiskUsage: int, toDownloadSeeds: dict, toDelSeeds: list, qBittorrent: QBittorrent) -> None:
-    toDownloadSeeds = self._sortToDownloadSeeds(toDownloadSeeds)
-    toDelSeeds = self._sortToDelSeeds(toDelSeeds)
-    for seed in toDownloadSeeds:
-        maxFree = sum(thisSeed['size'] for thisSeed in toDelSeeds)
-        if CONFIG.maxDiskUsage - nowDiskUsage + maxFree < seed['size']:
-            logger.log(f'最大空间使用{convertBytes2humanReadable(CONFIG.maxDiskUsage)}，当前空间使用{convertBytes2humanReadable(nowDiskUsage)}，最多释放空间{convertBytes2humanReadable(maxFree)}，小于所需空间{convertBytes2humanReadable(seed["size"])}，无法下载种子{seed["name"]}')
-            continue
-        reallyToDel = []
-        while CONFIG.maxDiskUsage - nowDiskUsage < seed['size']:
-            thisToDelSeed = toDelSeeds[len(reallyToDel)]
-            nowDiskUsage -= thisToDelSeed['size']
-            reallyToDel.append(thisToDelSeed)
-        reallyToDel_rollback = []
-        for i in range(len(reallyToDel) - 1, -1, -1):
-            thisToDelSeed = reallyToDel[i]
-            if CONFIG.maxDiskUsage - (nowDiskUsage + thisToDelSeed['size']) >= seed['size']:
-                reallyToDel_rollback.append(thisToDelSeed)  # 这个可以不删
-                nowDiskUsage += thisToDelSeed['size']
-        reallyToDel = reallyToDel_rollback
-        del reallyToDel_rollback
-        for thisToDelSeed in reallyToDel:
-            logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})', notShowAgain=False)
-            qBittorrent.deleteTorrents(thisToDelSeed['hash'])
-            toDelSeeds.remove(thisToDelSeed)
-        logger.log(f'下载种子：{seed["name"]} ({convertBytes2humanReadable(seed["size"])}) | 做种者：{seed["seeders"]} | 下载者：{seed["leechers"]}', notShowAgain=False)
-        qBittorrent.addNewTorrent(seed['id'])
-        nowDiskUsage += seed['size']
-```
 
 
 ## TODO

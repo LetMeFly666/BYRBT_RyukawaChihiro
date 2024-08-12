@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-08-12 09:55:23
+LastEditTime: 2024-08-12 10:11:16
 '''
 from src.configer import CONFIG
 from src.getter import BYR
@@ -57,19 +57,20 @@ class TopAndFree:
             if CONFIG.maxDiskUsage - nowDiskUsage + maxFree < seed['size']:
                 logger.log(f'最大空间使用{convertBytes2humanReadable(CONFIG.maxDiskUsage)}，当前空间使用{convertBytes2humanReadable(nowDiskUsage)}，最多释放空间{convertBytes2humanReadable(maxFree)}，小于所需空间{convertBytes2humanReadable(seed["size"])}，无法下载种子{seed["name"]}')
                 continue
+            requireToFree = seed['size'] - (CONFIG.maxDiskUsage - nowDiskUsage)
+            freedSpace = 0
             reallyToDel = []
-            while CONFIG.maxDiskUsage - nowDiskUsage < seed['size']:
-                thisToDelSeed = toDelSeeds[len(reallyToDel)]
-                nowDiskUsage -= thisToDelSeed['size']
+            for thisToDelSeed in toDelSeeds:
+                if freedSpace >= requireToFree:
+                    break
+                freedSpace += thisToDelSeed['size']
                 reallyToDel.append(thisToDelSeed)
-            reallyToDel_rollback = []
-            for i in range(len(reallyToDel) - 1, -1, -1):
-                thisToDelSeed = reallyToDel[i]
-                if CONFIG.maxDiskUsage - (nowDiskUsage + thisToDelSeed['size']) >= seed['size']:
-                    reallyToDel_rollback.append(thisToDelSeed)  # 这个可以不删
-                    nowDiskUsage += thisToDelSeed['size']
-            reallyToDel = reallyToDel_rollback
-            del reallyToDel_rollback
+            rollbackSeeds = []
+            for thisToDelSeed in reversed(reallyToDel):
+                if freedSpace - thisToDelSeed['size'] >= requireToFree:
+                    rollbackSeeds.append(thisToDelSeed)  # 这个可以不删
+                    freedSpace -= thisToDelSeed['size']
+            reallyToDel = [seed for seed in reallyToDel if seed not in rollbackSeeds]
             for thisToDelSeed in reallyToDel:
                 logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})', notShowAgain=False)
                 qBittorrent.deleteTorrents(thisToDelSeed['hash'])
