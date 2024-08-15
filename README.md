@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-15 09:32:32
+ * @LastEditTime: 2024-08-15 12:01:21
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -76,24 +76,24 @@
     client_username = 'RyukawaChihiro'   # bt客户端web的用户名
     client_password = '666'              # bt客户端web的密码
     maxDiskUsage = 525.25                # 最大磁盘空间使用量(单位GB)
-    savePath = ''                        # 【可选】默认保存路径
-    refreshTime = 121                    # 【可选】种子刷新间隔
     ```
 
 6. 执行命令`python main.py`，开始愉快地刷流吧。
 
 ## 配置说明
 
-|参数|类型|描述|举例|
+|参数|类型|描述|示例|
 |:--:|:--:|:--:|:--:|
 |`cookie`|string|byrpt网页端的cookie，可参考[如何使用](#如何使用)第2步获取|`'eyJ0eXA45454jkjsiu...'`|
 |`passkey`|string|byrpt账号passkey，可参考[如何使用](#如何使用)第3步获取|`'ljkjeijoi099988739879'`|
 |`client_ip`|string|qBittorrent客户端web ui的地址，可参考[如何使用](#如何使用)第4步进行配置|`'http://127.0.0.1:8080'`|
 |`client_username`|string|qBittorrent客户端web ui的用户名，可参考[如何使用](#如何使用)第4步进行配置|`'RyukawaChihiro'`|
 |`client_password`|string|qBittorrent客户端web ui的密码，可参考[如何使用](#如何使用)第4步进行配置|`'666'`|
-|`maxDiskUsage`|float|为TopFree的种子预留的最大空间（超过此空间的种子将依据一定的策略进行下载或增删），单位GB|`525.25`|
-|`savePath`*optional*|string|文件要保存到的位置。若不选，则将保存在客户端中设置的默认位置|`''`|
-|`refreshTime`*optional*|integer|每隔多长时间查询一次是否有新种子，单位秒。若不选，则默认121s访问一次byrpt|`121`|
+|`maxDiskUsage`|float|为TopFree的种子预留的最大空间（超过此空间的种子将依据一定的策略进行下载或增删），单位GB。请确保预留足够的空间|`525.25`|
+|`savePath` *optional*|string|文件要保存到的位置。若不选，则将保存在客户端中设置的默认位置|`''`|
+|`refreshTime` *optional*|integer|每隔多长时间查询一次是否有新种子，单位秒。若不选，则默认121s访问一次byrpt|`121`|
+|`forceDeleteFile` *optional*|boolean|是否监控文件是否删除成功。如果`True`，则`forceDeleteFile_maxWait`秒后文件仍然在磁盘上的话，开始调用系统命令强制删除本地文件。原因见[#3](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/3)。若勾选，请确保种子文件在本机；默认值为`True`|`True`|
+|`forceDeleteFile_maxWait` *optional*|float|调用种子客户端api删除种子及文件多少秒后文件仍在本地，才会强制删除本地文件。只有当`forceDeleteFile`为`True`时此项才会启用。默认值为`15.0`(s)|`15`|
 
 ## 运行逻辑
 
@@ -157,9 +157,10 @@ def reallyDownload(seed):
 - [x] 磁盘空间考虑
 - [x] controller
 - [x] Logger
-- [ ] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/2): [log失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/1) - 磁盘剩余可用空间为0，log写入文件失败
-- [ ] fix: [种子删除失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/1) - 即使删除种子时告诉客户端同时删除本地文件，但有时候客户端仍然会把文件保留在磁盘上。现在已经是暂停做种5秒后才删了
-- [ ] 避免产生额外下载量的问题：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
+- [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/2): [log失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/1) - 磁盘剩余可用空间为0，log写入文件失败
+- [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/4): [种子删除失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/3) - 即使删除种子时告诉客户端同时删除本地文件，但有时候客户端仍然会把文件保留在磁盘上。现在已经是暂停做种5秒后才删了
+- [ ] [多线程删除文件](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/5)：如果`forceDeleteFile_maxWait`秒后文件仍未被删除切手动删除失败，则启动一个后台进程监控文件的状态，当文件可以被释放时删除并结束这个线程
+- [ ] [避免产生额外下载量的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/6)：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
 - [ ] 账号密码登录byr，在cookie失效时自动刷新cookie
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
 
