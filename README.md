@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-12 10:14:55
+ * @LastEditTime: 2024-08-15 09:32:32
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -157,6 +157,8 @@ def reallyDownload(seed):
 - [x] 磁盘空间考虑
 - [x] controller
 - [x] Logger
+- [ ] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/2): [log失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/1) - 磁盘剩余可用空间为0，log写入文件失败
+- [ ] fix: [种子删除失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/1) - 即使删除种子时告诉客户端同时删除本地文件，但有时候客户端仍然会把文件保留在磁盘上。现在已经是暂停做种5秒后才删了
 - [ ] 避免产生额外下载量的问题：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
 - [ ] 账号密码登录byr，在cookie失效时自动刷新cookie
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
