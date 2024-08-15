@@ -2,11 +2,14 @@
 Author: LetMeFly
 Date: 2024-08-08 10:27:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 17:40:03
+LastEditTime: 2024-08-15 11:49:11
 '''
 from src.configer import CONFIG
 import requests
 import time
+from os.path import exists
+from src.logger import logger, clearBeforePrint
+from src.utils import forceDelete
 
 
 class QBittorrent:
@@ -95,12 +98,29 @@ class QBittorrent:
         # print(response)
         # print(response.text)
 
-    """删除种子"""
-    def deleteTorrents(self, hashes: str) -> None:
-        self.forceReannounce(hashes)
+    """删除种子 | 一次仅支持删除一个种子"""
+    def deleteTorrent(self, seed: dict) -> None:
+        contentPath = seed['content_path']
+        hash = seed['hash']
+        self.forceReannounce(hash)
         time.sleep(5)
-        self.pauseTorrents(hashes)
+        self.pauseTorrents(hash)
         time.sleep(5)
-        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/delete', {'hashes': hashes, 'deleteFiles': True})
+        response = self._request_post(f'{CONFIG.client_ip}/api/v2/torrents/delete', {'hashes': hash, 'deleteFiles': True})
         # print(response)
         # print(response.text)
+        clearBeforePrint('正在等待客户端删除本地文件')
+        maxWait = CONFIG.forceDeleteFile_maxWait
+        nowWait = 0
+        stillExists = lambda: exists(contentPath)
+        while nowWait < maxWait:
+            thisWait = min(maxWait - nowWait, 0.1)
+            time.sleep(thisWait)
+            nowWait += thisWait
+            if not stillExists():
+                break
+        if stillExists():
+            logger.log(f'经过了{maxWait}s，客户端仍未成功删除种子的本地文件，开始调用系统命令强制删除：{seed["name"]}', notShowAgain=False)
+            deleteOk = forceDelete(contentPath)
+            if not deleteOk:
+                logger.log(f'强制删除也失败了，流川千寻需要你的帮助 | 种子名称：{seed["name"]} | 本地路径：{contentPath}', notShowAgain=False, color=logger.Color.BLUE)

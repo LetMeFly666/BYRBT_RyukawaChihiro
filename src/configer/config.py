@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:31:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-10 18:18:31
+LastEditTime: 2024-08-15 11:03:24
 '''
 import sys
 append = sys.path.append
@@ -37,6 +37,14 @@ class Config:
                 self.refreshTime = secret.refreshTime
             except:
                 self.refreshTime = 121
+            try:
+                self.forceDeleteFile = secret.forceDeleteFile
+            except:
+                self.forceDeleteFile = True
+            try:
+                self.forceDeleteFile_maxWait = float(secret.forceDeleteFile_maxWait)
+            except:
+                self.forceDeleteFile_maxWait = 15.0
         except Exception as e:
             print(e)
             print('\n')

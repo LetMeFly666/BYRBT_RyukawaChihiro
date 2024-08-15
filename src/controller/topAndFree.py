@@ -73,7 +73,7 @@ class TopAndFree:
             reallyToDel = [seed for seed in reallyToDel if seed not in rollbackSeeds]
             for thisToDelSeed in reallyToDel:
                 logger.log(f'删除种子：{thisToDelSeed["name"]} | 添加于：{convertTimestamp2humanReadable(thisToDelSeed["added_on"])}({convertBytes2humanReadable(thisToDelSeed["size"])})', notShowAgain=False)
-                qBittorrent.deleteTorrents(thisToDelSeed['hash'])
+                qBittorrent.deleteTorrent(thisToDelSeed)
                 toDelSeeds.remove(thisToDelSeed)
             logger.log(f'下载种子：{seed["name"]} ({convertBytes2humanReadable(seed["size"])}) | 做种者：{seed["seeders"]} | 下载者：{seed["leechers"]}', notShowAgain=False)
             qBittorrent.addNewTorrent(seed['id'])

@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 18:39:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-15 09:15:51
+LastEditTime: 2024-08-15 11:29:41
 '''
 import sys
 stdout = sys.stdout
@@ -10,6 +10,8 @@ del sys
 from os.path import join, exists, dirname
 from os import makedirs, getcwd
 from src.utils import getNow
+from colorama import Fore, Style, init
+from enum import Enum
 
 
 """首先将光标移动到这一行的行首，然后清空这一行，再输出字符串，不回车"""
@@ -38,6 +40,7 @@ class Logger:
             with open(self.logFilePath, 'w', encoding='utf-8') as file:
                 pass
         self.historyLogs = self._loadHistoryLogs()
+        init(autoreset=True)  # 在 Windows 系统上需要调用此函数，Linux 系统可以忽略
 
     def _loadHistoryLogs(self):
         logs = set()
@@ -46,14 +49,25 @@ class Logger:
                 for line in file:
                     logs.add(line.strip())
         return logs
+    
+    class Color(Enum):
+        RED = Fore.RED
+        GREEN = Fore.GREEN
+        BLUE = Fore.BLUE
+        YELLOW = Fore.YELLOW
+        MAGENTA = Fore.MAGENTA
+        CYAN = Fore.CYAN
+        WHITE = Fore.WHITE
 
-    def log(self, message: str, notShowAgain: bool = True, ifShowTime: bool = True) -> None:
+    def log(self, message: str, notShowAgain: bool = True, ifShowTime: bool = True, color: Color = None) -> None:
         if notShowAgain and message in self.historyLogs:
             return
         if ifShowTime:
             toPrint = message + f' | {getNow()}'
         else:
             toPrint = message
+        if color:
+            toPrint = color.value + toPrint + Style.RESET_ALL
         clearBeforePrint(toPrint)
         print()  # 回车后上一行信息不会被覆盖
         try:  # 即使用户同意使用CONFIG.maxDiskUsage的空间，但实际上仍然可能由于删除种子时文件删除失败而导致磁盘剩余空间为0，从而导致写入失败
