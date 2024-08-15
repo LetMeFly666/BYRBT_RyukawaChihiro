@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 18:39:43
 LastEditors: LetMeFly
-LastEditTime: 2024-08-11 09:24:17
+LastEditTime: 2024-08-15 09:15:51
 '''
 import sys
 stdout = sys.stdout
@@ -56,8 +56,11 @@ class Logger:
             toPrint = message
         clearBeforePrint(toPrint)
         print()  # 回车后上一行信息不会被覆盖
-        with open(self.logFilePath, 'a', encoding='utf-8') as file:
-            file.write(message + '\n')
+        try:  # 即使用户同意使用CONFIG.maxDiskUsage的空间，但实际上仍然可能由于删除种子时文件删除失败而导致磁盘剩余空间为0，从而导致写入失败
+            with open(self.logFilePath, 'a', encoding='utf-8') as file:
+                file.write(message + '\n')
+        except Exception as e:
+            print(e)
         self.historyLogs.add(message)
 
 
