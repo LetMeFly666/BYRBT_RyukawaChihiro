@@ -1,0 +1,4 @@
+Requests
+beautifulsoup4
+colorama
+lxml
