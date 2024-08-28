@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-26 16:28:57
+ * @LastEditTime: 2024-08-28 17:05:13
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -146,6 +146,25 @@ def reallyDownload(seed):
     控制客户端下载种子_并_打上sc标签(seed)
 ```
 
+## 开发文档
+
+如果你想~~成为流川千寻的一部分~~（想贡献代码），你可以阅读开发文档，流川千寻会非常地高兴。
+
+```
+.
+├─config                配置目录
+├─docs                  文档
+└─src                   源码
+    ├─client            控制种子客户端的行为
+    │  └─qBittorrent    控制qBittorrent下载、删除种子等。如果你想写一个能控制LetBittorrent客户端的功能，可以参考qBittorrent的api接口写一个
+    ├─configer          读取和处理配置文件
+    ├─controller        策略。当前策略是Readme中所说的FreeTop策略。你也可以新写一个策略
+    ├─getter            获取种子信息
+    │  └─getBYR         获取BYRBT的种子信息。如果你想获取TJUPT等的种子信息，你也可以参考getBYR的api接口写一个
+    ├─logger            日志处理
+    └─utils             一些基础工具（函数）
+```
+
 ## TODO
 
 ### 总体需求
@@ -160,6 +179,7 @@ def reallyDownload(seed):
 - [ ] [避免产生额外下载量的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/6)：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
 - [ ] 账号密码登录byr，在cookie失效时[自动刷新cookie](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/7)
 - [ ] [通过cookie获取passkey](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/8)：这样用户就可以少配置一个东西了:+(
+- [ ] [增加配置——最大做种比](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/9)：若一个TopFree的“做种者/下载者”很大则跳过该种子。（例如黑神话悟空之前Top过一次，过了一周左右再次Top了，这时有100多做种者和十来个下载者，且需要占据100多G硬盘空间，可能会导致没有足够的空间下载其他种子。）
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
 
 ### 具体细节
