@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-09 23:26:37
 LastEditors: LetMeFly
-LastEditTime: 2024-08-11 09:51:27
+LastEditTime: 2024-09-01 10:30:59
 '''
 import requests
 from bs4 import BeautifulSoup
@@ -124,3 +124,14 @@ def getTopFree() -> list:
         ans.append(_getTorrentInfoBySoup(torrent))
     return ans
 
+
+"""
+通过CONFIG.cookie获取passkey
+"""
+def getPasskey() -> str:
+    response = requests.get('https://byr.pt/usercp.php', cookies={'auth_token': CONFIG.cookie})
+    html = response.text
+    soup = BeautifulSoup(html, 'lxml')
+    passkey_td = soup.find('td', text='passkey')
+    passkey_value = passkey_td.find_next_sibling('td').text
+    return passkey_value

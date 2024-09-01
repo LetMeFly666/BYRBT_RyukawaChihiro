@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-08-12 10:11:16
+LastEditTime: 2024-09-01 10:58:11
 '''
 from src.configer import CONFIG
 from src.getter import BYR
