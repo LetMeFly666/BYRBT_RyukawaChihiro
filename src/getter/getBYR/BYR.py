@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-09 23:26:37
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 09:33:06
+LastEditTime: 2024-09-01 10:30:59
 '''
 import requests
 from bs4 import BeautifulSoup
@@ -126,12 +126,10 @@ def getTopFree() -> list:
 
 
 """
-通过cookie动态获取passkey
-这个函数无法使用CONFIG，因为这个函数需要在CONFIG中被调用
+通过CONFIG.cookie获取passkey
 """
-def getPasskeyByCookie(cookie: str) -> str:
-    print('调用了getPasskeyByCookie函数')
-    response = requests.get('https://byr.pt/usercp.php', cookies={'auth_token': cookie})
+def getPasskey() -> str:
+    response = requests.get('https://byr.pt/usercp.php', cookies={'auth_token': CONFIG.cookie})
     html = response.text
     soup = BeautifulSoup(html, 'lxml')
     passkey_td = soup.find('td', text='passkey')

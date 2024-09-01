@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:31:43
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 09:38:02
+LastEditTime: 2024-09-01 10:31:18
 '''
 import sys
 append = sys.path.append
@@ -93,8 +93,8 @@ class Config:
     @property
     def passkey(self) -> str:
         if self._passkey == '流川千寻':
-            from src.getter.getBYR import getPasskeyByCookie
-            self._passkey = getPasskeyByCookie(self.cookie)
+            from src.getter.getBYR import getPasskey
+            self._passkey = getPasskey(self.cookie)
         return self._passkey
 
     def _getClient(self):

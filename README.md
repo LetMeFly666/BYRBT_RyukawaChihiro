@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-08-28 17:05:13
+ * @LastEditTime: 2024-09-01 10:38:42
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -56,11 +56,7 @@
 
     ![获取cookie](docs/img/howToFindCookie.jpg)
 
-3. 登录BYRBT，获取你的passkey：
-    
-    访问[`https://byr.pt/usercp.php`](https://byr.pt/usercp.php)，找到`passkey`并将后面的一串值复制
-
-    ![获取passkey](docs/img/getPasskey.jpg)
+3. star本仓库，要不然，要不然流川千寻就哭给你看！[![star数](https://unv-shield.librian.net/api/unv_shield?repo=LetMeFly666/BYRBT_RyukawaChihiro)](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro)
 
 4. 开启BT客户端的Web用户界面，以qBittorrent为例(当前仅支持这一个客户端)：
 
@@ -72,7 +68,6 @@
     
     ```python
     cookie = 'eyJ0eXA...第2步获取到的值'
-    passkey = '第3步获取到的值'
     client_ip = 'http://127.0.0.1:8080'  # 被控制的客户端的web ip
     client_username = 'RyukawaChihiro'   # bt客户端web的用户名
     client_password = '666'              # bt客户端web的密码
@@ -86,15 +81,14 @@
 |参数|类型|描述|示例|
 |:--:|:--:|:--:|:--:|
 |`cookie`|string|byrpt网页端的cookie，可参考[如何使用](#如何使用)第2步获取|`'eyJ0eXA45454jkjsiu...'`|
-|`passkey`|string|byrpt账号passkey，可参考[如何使用](#如何使用)第3步获取|`'ljkjeijoi099988739879'`|
 |`client_ip`|string|qBittorrent客户端web ui的地址，可参考[如何使用](#如何使用)第4步进行配置|`'http://127.0.0.1:8080'`|
 |`client_username`|string|qBittorrent客户端web ui的用户名，可参考[如何使用](#如何使用)第4步进行配置|`'RyukawaChihiro'`|
 |`client_password`|string|qBittorrent客户端web ui的密码，可参考[如何使用](#如何使用)第4步进行配置|`'666'`|
 |`maxDiskUsage`|float|为TopFree的种子预留的最大空间（超过此空间的种子将依据一定的策略进行下载或增删），单位GB。请确保预留足够的空间|`525.25`|
-|`savePath` *optional*|string|文件要保存到的位置。若不选，则将保存在客户端中设置的默认位置|`''`|
-|`refreshTime` *optional*|integer|每隔多长时间查询一次是否有新种子，单位秒。若不选，则默认121s访问一次byrpt|`121`|
-|`forceDeleteFile` *optional*|boolean|是否监控文件是否删除成功。如果`True`，则`forceDeleteFile_maxWait`秒后文件仍然在磁盘上的话，开始调用系统命令强制删除本地文件。原因见[#3](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/3)。若勾选，请确保种子文件在本机；默认值为`True`|`True`|
-|`forceDeleteFile_maxWait` *optional*|float|调用种子客户端api删除种子及文件多少秒后文件仍在本地，才会强制删除本地文件。只有当`forceDeleteFile`为`True`时此项才会启用。默认值为`15.0`(s)|`15`|
+|`savePath` *可选*|string|文件要保存到的位置。若不选，则将保存在客户端中设置的默认位置|`''`|
+|`refreshTime` *可选*|integer|每隔多长时间查询一次是否有新种子，单位秒。若不选，则默认121s访问一次byrpt|`121`|
+|`forceDeleteFile` *可选*|boolean|是否监控文件是否删除成功。如果`True`，则`forceDeleteFile_maxWait`秒后文件仍然在磁盘上的话，开始调用系统命令强制删除本地文件。原因见[#3](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/3)。若勾选，请确保种子文件在本机；默认值为`True`|`True`|
+|`forceDeleteFile_maxWait` *可选*|float|调用种子客户端api删除种子及文件多少秒后文件仍在本地，才会强制删除本地文件。只有当`forceDeleteFile`为`True`时此项才会启用。默认值为`15.0`(s)|`15`|
 
 ## 运行逻辑
 
@@ -180,7 +174,7 @@ def reallyDownload(seed):
 - [ ] 账号密码登录byr，在cookie失效时[自动刷新cookie](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/7)
 - [ ] [通过cookie获取passkey](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/8)：这样用户就可以少配置一个东西了:+(
 - [ ] [增加配置——最大做种比](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/9)：若一个TopFree的“做种者/下载者”很大则跳过该种子。（例如黑神话悟空之前Top过一次，过了一周左右再次Top了，这时有100多做种者和十来个下载者，且需要占据100多G硬盘空间，可能会导致没有足够的空间下载其他种子。）
-- [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。
+- [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。但是，应该快开学全站Free了。
 
 ### 具体细节
 
@@ -196,4 +190,4 @@ def reallyDownload(seed):
 
 + 仓库地址：[Github@LetMeFly666/BYRBT_RyukawaChihiro](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro)
 + 在线浏览：[RyukawaChihiro.LetMeFly.XYZ](https://ryukawachihiro.letmefly.xyz/)
-+ [我的流量条](https://byr.pt/mybar.php?userid=371930&bgpic=3)
++ [我的流量条(教育网/Wai网 ipv6可看)](https://byr.pt/mybar.php?userid=371930&bgpic=3)

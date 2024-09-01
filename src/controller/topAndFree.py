@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 09:51:31
+LastEditTime: 2024-09-01 10:58:11
 '''
 from src.configer import CONFIG
 from src.getter import BYR
@@ -116,10 +116,6 @@ class TopAndFree:
         self._download(nowDiskUsage, toDownloadSeeds, toDelSeeds, qBittorrent)
     
     def run(self) -> None:
-        # TODO: remove this log
-        print(f'print passkey in TopAndFree: {CONFIG.passkey}')
-        print(f'print passkey in TopAndFree, 2: {CONFIG.passkey}')
-        exit(0)
         logger.log('流川千寻 · 启动！', notShowAgain=False)
         # self._runOnce()
         while True:
