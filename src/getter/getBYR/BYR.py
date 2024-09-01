@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-09 23:26:37
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 10:30:59
+LastEditTime: 2024-09-01 12:06:35
 '''
 import requests
 from bs4 import BeautifulSoup
@@ -12,11 +12,38 @@ import re
 from src.logger import logger
 
 
+"""
+真正的重新登录的函数
+依据CONFIG中的账号密码登录BYRPT，获取COOKIE并存储在CONFIG中。
+"""
+def _login() -> None:
+    response = requests.post('https://byr.pt/takelogin.php', data={'logintype': 'username', 'userinput': CONFIG.BYRBT_username, 'password': CONFIG.BYRBT_password, 'autologin': 'yes'}, allow_redirects=False)
+    cookie = response.cookies.get_dict().get('auth_token')
+    CONFIG.cookie = cookie
+
+
+"""
+除登录外，所有对于BYRPT的请求必须使用此函数！
+此函数在COOKIE过期时会重新登录并获取新的COOKIE。
+当前仅支持GET请求。
+"""
+def _baseFunction_requestWithCookieCheck(url: str) -> requests.Response:
+    response = requests.get(url, cookies={'auth_token': CONFIG.cookie})
+    # 因为cookie中没有设置语言，所以一定会返回中文页面
+    mustList = ['未登录!', '注册', '该页面必须在登录后才能访问', '次连续登录失败将导致你的IP地址被禁用!']
+    for thisWord in mustList:  # 所有
+        if thisWord not in response.text:
+            return response
+    logger.log('COOKIE过期，重新登录', notShowAgain=False)
+    _login()
+    return requests.get(url, cookies={'auth_token': CONFIG.cookie})
+
+
 @untilSuccess(5)
 @Cacher('id2hash')
 def getHashById(id: str) -> str:    
     logger.log(f'get hash by id({id})')
-    response = requests.get(f'https://byr.pt/details.php?id={id}', cookies={'auth_token': CONFIG.cookie})
+    response = _baseFunction_requestWithCookieCheck(f'https://byr.pt/details.php?id={id}')
     pattern = re.compile(r'Hash码.*?\s*[:：]\s*<[^>]*>\s*(?:&nbsp;)*\s*([a-z0-9]+)')  # Hash码 数个空格 中文或英文冒号 HTML标签 数个空格 数个&nbsp; 数个空格 小写字母或数字字符串
     match = pattern.search(response.text)
     result = match.group(1)
@@ -113,7 +140,7 @@ def _getTorrentInfoBySoup(torrent: BeautifulSoup) -> dict:
 """
 @untilSuccess(CONFIG.refreshTime)
 def getTopFree() -> list:
-    response = requests.get('https://byr.pt/torrents.php', cookies={'auth_token': CONFIG.cookie})
+    response = _baseFunction_requestWithCookieCheck('https://byr.pt/torrents.php')
     html = response.text
     soup = BeautifulSoup(html, 'lxml')
     torrentTable = soup.select_one('table.torrents.coltable.full')
@@ -129,7 +156,7 @@ def getTopFree() -> list:
 通过CONFIG.cookie获取passkey
 """
 def getPasskey() -> str:
-    response = requests.get('https://byr.pt/usercp.php', cookies={'auth_token': CONFIG.cookie})
+    response = _baseFunction_requestWithCookieCheck('https://byr.pt/usercp.php')
     html = response.text
     soup = BeautifulSoup(html, 'lxml')
     passkey_td = soup.find('td', text='passkey')
