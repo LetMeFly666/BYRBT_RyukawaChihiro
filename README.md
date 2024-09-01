@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-09-01 12:10:58
+ * @LastEditTime: 2024-09-01 23:50:31
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -52,7 +52,7 @@
     3. 下载[源代码](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/archive/refs/heads/master.zip)
     4. 安装[qBittorrent](https://www.fosshub.com/qBittorrent.html?dwl=qbittorrent_4.6.5_x64_setup.exe)（当前支持≥v4.1.x，低版本可能有部分api无法得到完全支持，推荐v4.6.5）
 
-2. 登录BYRBT，获取你的cookie：
+2. **这一步可以跳过**。登录BYRBT，获取你的cookie：
 
     ![获取cookie](docs/img/howToFindCookie.jpg)
 
@@ -67,7 +67,8 @@
 5. 在`config`目录下新建文件`secret.py`，输入以下内容（可参考[配置说明](#配置说明)部分进行配置）：
     
     ```python
-    cookie = 'eyJ0eXA...第2步获取到的值'
+    byrbt_username = 'Tisfy'             # BYRBT的账号
+    byrbt_password = 'letmefly.xyz'      # BYRBT的密码
     client_ip = 'http://127.0.0.1:8080'  # 被控制的客户端的web ip
     client_username = 'RyukawaChihiro'   # bt客户端web的用户名
     client_password = '666'              # bt客户端web的密码
@@ -80,7 +81,9 @@
 
 |参数|类型|描述|示例|
 |:--:|:--:|:--:|:--:|
-|`cookie`|string|byrpt网页端的cookie，可参考[如何使用](#如何使用)第2步获取|`'eyJ0eXA45454jkjsiu...'`|
+|`cookie` *可选*|string|byrpt网页端的cookie，可参考[如何使用](#如何使用)第2步获取。指定cookie可以减少一次登录，若不指定或所指定cookie已过期，流川千寻会依据账号密码登录并将cookie保存在配置文件中|`'eyJ0eXA45454jkjsiu...'`|
+|`byrbt_username`|string|BYRBT的账号|`'Tisfy'`|
+|`byrbt_password`|string|BYRBT的密码|`'letmefly.xyz'`|
 |`client_ip`|string|qBittorrent客户端web ui的地址，可参考[如何使用](#如何使用)第4步进行配置|`'http://127.0.0.1:8080'`|
 |`client_username`|string|qBittorrent客户端web ui的用户名，可参考[如何使用](#如何使用)第4步进行配置|`'RyukawaChihiro'`|
 |`client_password`|string|qBittorrent客户端web ui的密码，可参考[如何使用](#如何使用)第4步进行配置|`'666'`|
@@ -170,6 +173,7 @@ def reallyDownload(seed):
 - [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/2): [log失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/1) - 磁盘剩余可用空间为0，log写入文件失败
 - [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/4): [种子删除失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/3) - 即使删除种子时告诉客户端同时删除本地文件，但有时候客户端仍然会把文件保留在磁盘上。现在已经是暂停做种5秒后才删了
 - [x] [chore](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/10): [通过cookie获取passkey](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/8) - 这样用户就可以少配置一个东西了:+(
+- [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/12): [写入配置文件格式出错](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/11)，然后内存就爆了
 - [ ] [多线程删除文件](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/5)：如果`forceDeleteFile_maxWait`秒后文件仍未被删除切手动删除失败，则启动一个后台进程监控文件的状态，当文件可以被释放时删除并结束这个线程
 - [ ] [避免产生额外下载量的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/6)：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
 - [ ] 账号密码登录byr，在cookie失效时[自动刷新cookie](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/7)
@@ -185,8 +189,8 @@ def reallyDownload(seed):
 - [x] 客户端 - 删除一个本地种子：汇报、暂停、删除 每次操作间隔5秒，防止文件被占用删除失败
 - [x] byr - 根据种子id获取hash：此处需有cache
 - [x] byr - 获取TopFree种子的信息：种子名、种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash（假设TopFree的种子不会超过一页）
+- [x] 通过账号密码登录：config.py：处理cookie和账号密码问题
 - [ ] 通过账号密码登录：README：配置说明x2、总体需求勾选
-- [ ] 通过账号密码登录：config.py：处理cookie和账号密码问题
 - [ ] 通过账号密码登录：写一个replace函数，替换secret.py中的cookie。正则大概是少不了了，注意不要给用户的注释覆盖了，只能改cookie对应的值
 
 ## End

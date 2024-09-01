@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-10 12:06:04
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 10:58:11
+LastEditTime: 2024-09-01 23:51:10
 '''
 from src.configer import CONFIG
 from src.getter import BYR
@@ -101,6 +101,7 @@ class TopAndFree:
 
     def _runOnce(self) -> None:
         topFree = BYR.getTopFree()
+        input('TODO:卡住')
         topfreeHashes = self._connectHashStr_byTorrent(topFree)
         qBittorrent = QBittorrent()  # 每次重新登录好了
         qBittorrent.addTorrentTags(topfreeHashes, 'sc')
