@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-09 23:26:37
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 12:06:35
+LastEditTime: 2024-09-02 12:28:15
 '''
 import requests
 from bs4 import BeautifulSoup
@@ -20,6 +20,8 @@ def _login() -> None:
     response = requests.post('https://byr.pt/takelogin.php', data={'logintype': 'username', 'userinput': CONFIG.BYRBT_username, 'password': CONFIG.BYRBT_password, 'autologin': 'yes'}, allow_redirects=False)
     cookie = response.cookies.get_dict().get('auth_token')
     CONFIG.cookie = cookie
+    with open('config/secret.py', 'a') as f:
+        f.write(f'\ncookie = \'{cookie}\'')
 
 
 """

@@ -2,7 +2,7 @@
 Author: LetMeFly
 Date: 2024-08-08 10:31:43
 LastEditors: LetMeFly
-LastEditTime: 2024-09-01 23:48:26
+LastEditTime: 2024-09-02 12:30:01
 '''
 import sys
 append = sys.path.append
@@ -33,9 +33,7 @@ class Config:
                 self.client_ip = self.client_ip[:-1]
             self.client_username = secret.client_username
             self.client_password = secret.client_password
-            input('TODO: begin maxDiskUsage')
             self.maxDiskUsage = int(secret.maxDiskUsage * 1024 * 1024 * 1024)
-            input('TODO: end maxDiskUsage')
             try:
                 self.savePath = secret.savePath
             except:
@@ -125,4 +123,3 @@ class Config:
 
 
 CONFIG = Config()
-print('TODO:CONFIG初始化完成')
