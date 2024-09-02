@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-09-01 23:50:31
+ * @LastEditTime: 2024-09-02 12:31:47
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -129,7 +129,7 @@ for seed in 需下载种子:
 
 def tryToDownload(seed):
     if maxDiskUsage - 当前磁盘总占用 + sum(thisSeed.size for thisSeed in 具有toDel标签的种子) < seed.size:
-        return  # “最大占用 - 已经使用 + 可释放” 仍然小于待下载种子，放弃下载 | TODO: 此处可有更优策略
+        return  # “最大占用 - 已经使用 + 可释放” 仍然小于待下载种子，放弃下载
     # 假如按照下载时间从早到晚的顺序种子大小为[1G, 2G, 7G, xxx]，需要释放的空间为8G
     # 则(1+2+7)=10≥8，之后从后往前回滚，10-7<8，10-2=8≥8（不删2），8-1<8，最终决定删除[1G, 7G]的种子
     真正要被删除的种子 = 下载早的优先_直至释放足够空间_从后往前回滚_移除可以不被删的种子()
@@ -174,9 +174,9 @@ def reallyDownload(seed):
 - [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/4): [种子删除失败的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/3) - 即使删除种子时告诉客户端同时删除本地文件，但有时候客户端仍然会把文件保留在磁盘上。现在已经是暂停做种5秒后才删了
 - [x] [chore](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/10): [通过cookie获取passkey](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/8) - 这样用户就可以少配置一个东西了:+(
 - [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/12): [写入配置文件格式出错](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/11)，然后内存就爆了
+- [x] [chore](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/13): 账号密码登录byr，在cookie失效时[自动刷新cookie](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/7)
 - [ ] [多线程删除文件](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/5)：如果`forceDeleteFile_maxWait`秒后文件仍未被删除切手动删除失败，则启动一个后台进程监控文件的状态，当文件可以被释放时删除并结束这个线程
 - [ ] [避免产生额外下载量的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/6)：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
-- [ ] 账号密码登录byr，在cookie失效时[自动刷新cookie](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/7)
 - [ ] [增加配置——最大做种比](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/9)：若一个TopFree的“做种者/下载者”很大则跳过该种子。（例如黑神话悟空之前Top过一次，过了一周左右再次Top了，这时有100多做种者和十来个下载者，且需要占据100多G硬盘空间，可能会导致没有足够的空间下载其他种子。）
 - [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。但是，应该快开学全站Free了。
 
@@ -190,8 +190,8 @@ def reallyDownload(seed):
 - [x] byr - 根据种子id获取hash：此处需有cache
 - [x] byr - 获取TopFree种子的信息：种子名、种子id、free剩余时长、种子大小、做种者数、下载者数、种子hash（假设TopFree的种子不会超过一页）
 - [x] 通过账号密码登录：config.py：处理cookie和账号密码问题
-- [ ] 通过账号密码登录：README：配置说明x2、总体需求勾选
-- [ ] 通过账号密码登录：写一个replace函数，替换secret.py中的cookie。正则大概是少不了了，注意不要给用户的注释覆盖了，只能改cookie对应的值
+- [x] 通过账号密码登录：~~写一个replace函数，替换secret.py中的cookie。正则大概是少不了了，注意不要给用户的注释覆盖了，只能改cookie对应的值~~  直接在最下面加一行就好了（大多数情况下）
+- [x] 通过账号密码登录：README：配置说明x2、总体需求勾选
 
 ## End
 
