@@ -2,7 +2,7 @@
  * @Author: LetMeFly
  * @Date: 2024-08-07 12:13:14
  * @LastEditors: LetMeFly
- * @LastEditTime: 2024-09-02 12:31:47
+ * @LastEditTime: 2024-09-02 16:55:14
 -->
 
 <img src="https://cdn.letmefly.xyz/img/ACG/AIGC/BYRBT_RyukawaChihiro/avatar_02.jpg" alt="Logo" align="right" width="150" style="padding: 10px;">
@@ -95,14 +95,73 @@
 
 ## 运行逻辑
 
-### 标签判定
+当前支持两个策略，一个是佛系的[TopAndFree](#topandfree)策略（只下载TopAndFree）的种子，一个是狂暴模式的[leechersAndSeeders](#leechersandseeders做种下载比)策略（考虑所有免费的种子，更适合全站free一些）。
+
+这两种策略不可共存。
+
+### leechersAndSeeders（做种下载比）
+
+#### 策略总述
+
+每个种子都会依据其~~大小~~、是否Top、是否新Free、下载做种比得到一个评分。
+
+依据种子评分动态增加或删除种子。
+
+#### 评分策略
+
+每个种子$s$都有一个评分，得分公式为：
+
+$$score(s)=Size(s)\times Top(s)\times Time(s)\times Rate(s)$$
+
+其中$Size(s)$是种子大小得分，当前$Size(s)=1$（暂未考虑种子大小得分）。
+
+其中$Top(s)$是种子TopFree情况的得分：
+
+1. 若种子$s$不是free，则$Top(s)=0$；
+1. 若种子$s$是free，则$Top(s)=1$；
+1. 若种子$s$是2xfree，则$Top(s)=2$；
+1. 若种子$s$是Topfree，则$Top(s)=5$；
+1. 若种子$s$是Top2xfree，则$Top(s)=10$；
+
+其中$Time(s)$是种子$s$的“Free时长”得分：
+
+> TopFree的种子很容易获取Free的时长（表现为网页端鼠标悬浮在置顶标签上就好）；普通free的种子可以通过日志搜索获取（但目前发现的方法中一次只能搜索一个种子的相关信息，且需要用户达到一定的等级才能查看日志，因此决定抛弃）。
+> 
+> 最终决定：
+> 
+> + 对于程序启动时的首次运行，$Time(s)=1$，此时程序会将“TopFree”、“Free”、“2xFree”这3类种子（每类最多一页）存入内存中；
+> + 对于后续的每次运行，
+> 
+>    1. 如果出现了不在内存中的Free新种：则$Time(s)=2$
+>    1. 如果出现了刚有做种者的种子（内存中信息为做种者为0，但现在有做种者了）：则$Time(s)=2.5$
+
+其中$Rate(s)$是种子$s$的下载做种比，计算公式为：
+
++ 如果$做种者=0$，则$Rate(s)=0$
++ 否则，$Rate(s)=\frac{下载者+1}{做种者}$（加一是为了防止新种子下载者为$0$，其他比例再大，相乘结果也是$0$）
+
+#### 增删策略
+
+流川千寻会对所有她经手过的种子打上`sc`标签。流川千寻可以任意把玩带有`sc`标签的种子，包括“强制汇报”、“暂停下载”、“删除”等。
+
+每次获取所有Free的种子（每个类别的种子最多一页）并计算其得分，若本地种子未在请求得到的页面里面则得分为$0$。
+
+在未下载的种子中，得分$\geq 1$的种子将进入“待下载队列”。
+
+待下载队列中的种子以得分高为优先、种子体积大为其次排序；本地具有`sc`标签的种子以得分低为优先、添加时间早为其次排序。
+
+依次遍历待下载队列中的种子。对于待下载的种子$s$，删除尽可能少的得分不高于这个种子$\frac15$的种子。
+
+### TopAndFree
+
+#### 标签判定
 
 流川千寻会对种子打上如下标签：
 
 1. `sc`：所有的TopFree的（或流川千寻工作期间TopFree过的）种子都会被打上`sc`标签。这些种子将会被认为不是长期做种的种子，可能会随着过期策略被删除。
 2. `toDel`：在TopFree过的种子中，由于免费时长到期等原因，已经不是TopFree的种子。这些种子将优先被删除。如果你不想要某个种子了，你可以手动将其添加toDel标签，流川千寻会在合适的时间删除它。
 
-### 种子判定
+#### 种子判定
 
 [种子判定](#种子判定)每隔`refreshTime`秒进行一次。
 
@@ -116,7 +175,7 @@
 
 若有TopFree的种子还未下载，则进入[种子下载](#种子下载)。
 
-### 种子下载
+#### 种子下载
 
 对所有待下载的种子，执行下面操作：
 
@@ -175,10 +234,10 @@ def reallyDownload(seed):
 - [x] [chore](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/10): [通过cookie获取passkey](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/8) - 这样用户就可以少配置一个东西了:+(
 - [x] [fix](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/12): [写入配置文件格式出错](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/11)，然后内存就爆了
 - [x] [chore](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/pull/13): 账号密码登录byr，在cookie失效时[自动刷新cookie](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/7)
+- [ ] [更好的种子优先级考虑](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/14)：下载优先级、上传优先级。emm，挺麻烦的。但是，应该快开学全站Free了。
 - [ ] [多线程删除文件](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/5)：如果`forceDeleteFile_maxWait`秒后文件仍未被删除切手动删除失败，则启动一个后台进程监控文件的状态，当文件可以被释放时删除并结束这个线程
 - [ ] [避免产生额外下载量的问题](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/6)：距离Free结束还有10分钟时若还在下载则暂停下载、若某TopFree突然被移除但还在下载则立刻停止下载
 - [ ] [增加配置——最大做种比](https://github.com/LetMeFly666/BYRBT_RyukawaChihiro/issues/9)：若一个TopFree的“做种者/下载者”很大则跳过该种子。（例如黑神话悟空之前Top过一次，过了一周左右再次Top了，这时有100多做种者和十来个下载者，且需要占据100多G硬盘空间，可能会导致没有足够的空间下载其他种子。）
-- [ ] 更好的种子优先级考虑：下载优先级、上传优先级。emm，挺麻烦的。但是，应该快开学全站Free了。
 
 ### 具体细节
 
